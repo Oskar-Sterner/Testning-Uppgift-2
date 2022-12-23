@@ -1,3 +1,4 @@
+
 /**
  *@jest-environment jsdom
  */
@@ -7,10 +8,14 @@
  
  describe("createHtml()", () => {
    test("should create HTML", () => {
-     // Arrange
-     document.body.innerHTML = `<div id="movie-container"></div>`;
-     let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
-     let movies = mockData;
+    //Arrange
+    document.body.innerHTML = `<div id="movie-container"></div>`;
+
+    let movies = mockData;
+
+    let container: HTMLDivElement = document.getElementById(
+      "movie-container"
+    ) as HTMLDivElement;
  
      // Act
      movieFunctions.createHtml(movies, container);
@@ -25,21 +30,31 @@
  });
 
  describe("displayNoResult()", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
   test("should show error message", () => {
-    // Arrange
+    //Arrange
     document.body.innerHTML = `<div id="movie-container"></div>`;
-    let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
+    let container: HTMLDivElement = document.getElementById(
+      "movie-container"
+    ) as HTMLDivElement;
 
-    // Act
+    //Act
     movieFunctions.displayNoResult(container);
 
-    // Assert
+    //Assert
     expect(container.innerHTML).toBe("<p>Inga sökresultat att visa</p>");
     document.body.innerHTML = "";
   });
 });
 
  describe("handleSubmit", () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
    test("should call createHtml", async () => {
      // Arrange
      document.body.innerHTML = 
@@ -91,6 +106,7 @@
 
     // Act
     await movieFunctions.handleSubmit();
+
     // Assert
     expect(spy).toHaveBeenCalled();
     document.body.innerHTML = "";
@@ -98,26 +114,29 @@
  });
  
  describe("init()", () => {
-   test("should add submit", () => {
-     // Arrange
-     let spy = jest.spyOn(movieFunctions, "handleSubmit").mockReturnValue(
-       new Promise<void>((resolve) => {
-         resolve();
-       })
-     );
- 
-     document.body.innerHTML = 
-     `<form id="searchForm">
-     <button type="submit" id="search">Sök</button>
-     </form>`;
- 
-     movieFunctions.init();
- 
-     //Act
-     (document.getElementById("searchForm") as HTMLFormElement)?.submit();
- 
-     //Assert
-     expect(spy).toHaveBeenCalled();
-     document.body.innerHTML = "";
-   });
- });
+  beforeEach(() => {
+    jest.resetModules();
+    jest.restoreAllMocks();
+  });
+
+  test("should add submit eventlistener", () => {
+    //Arrange
+    let spy = jest.spyOn(movieFunctions, "handleSubmit").mockReturnValue(
+      new Promise<void>((resolve) => {
+        resolve();
+      })
+    );
+    document.body.innerHTML = `
+    <form id="searchForm">
+    <button type="submit" id="search">Sök</button>
+    </form>`;
+    movieFunctions.init();
+
+    //Act
+    (document.getElementById("searchForm") as HTMLFormElement)?.submit();
+
+    //Assert
+    expect(spy).toHaveBeenCalled();
+    document.body.innerHTML = "";
+  });
+});
