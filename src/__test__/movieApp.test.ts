@@ -4,29 +4,31 @@
  */
 
  import * as movieFunctions from "../ts/movieApp";
- import { mockData } from "../ts/services/__mocks__/movieservice";
+ import * as movieservicesFunctions from "../ts/services/movieservice"
+ import { IMovie } from "../ts/models/IMovie";
+
+ jest.mock("../ts/services/movieservice");
  
  describe("createHtml()", () => {
-   test("should create HTML", () => {
-    //Arrange
+   test("should create HTML", async () => {
+    // Arrange
+    expect.assertions(3);
     document.body.innerHTML = `<div id="movie-container"></div>`;
-
-    let movies = mockData;
-
     let container: HTMLDivElement = document.getElementById(
       "movie-container"
     ) as HTMLDivElement;
- 
-     // Act
-     movieFunctions.createHtml(movies, container);
- 
-     // Assert
-     expect(document.querySelectorAll("img").length).toBe(2);
-     expect(document.querySelectorAll("h3").length).toBe(2);
-     expect(document.querySelectorAll("div.movie").length).toBe(2);
 
-     document.body.innerHTML = "";
-   });
+    let searchText: string = "Lord";
+    let movies: IMovie[] = await movieservicesFunctions.getData(searchText);
+
+    //Act
+    movieFunctions.createHtml(movies, container);
+
+    // Assert
+    expect(document.querySelectorAll("div.movie").length).toBe(2);
+    expect(document.querySelectorAll("img").length).toBe(2);
+    expect(document.querySelectorAll("h3").length).toBe(2);
+  });
  });
 
  describe("displayNoResult()", () => {
